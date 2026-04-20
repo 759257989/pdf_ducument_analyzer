@@ -4,7 +4,7 @@ A document-grounded Q&A chatbot. Upload PDFs and ask questions in natural langua
 
 一个基于文档的问答聊天机器人。上传 PDF，用自然语言提问，机器人只依据你上传的文档作答，并给出页码级别的引用。
 
-**[English](#english) | [中文](#中文)**
+**[English](#english) | [中文**](#中文)
 
 ---
 
@@ -12,30 +12,36 @@ A document-grounded Q&A chatbot. Upload PDFs and ask questions in natural langua
 
 ### Screenshots
 
-| Login | Upload & Ask | Conversation History |
-|-------|--------------|----------------------|
-| ![Login](Login.png) | ![Upload and Ask](screenshot1.png) | ![History](screenshot2.png) |
+
+| Login | Upload & Ask   | Conversation History |
+| ----- | -------------- | -------------------- |
+| Login | Upload and Ask | History              |
+
 
 ### Quick Start
 
-One command:
+Before starting:
+
+1. Prepare an OpenAI API key. Then follow `.env.example`
+2. Create a `.env` file at the project root and put the key in it.
+3. Run:
 
 ```bash
-cp .env.example .env
-# edit .env and put your real OPENAI_API_KEY in
 docker compose up --build
 ```
 
-Then open **http://localhost:8080** in your browser.
+Then open **[http://localhost:8080](http://localhost:8080)** in your browser.
 
 Requirements: Docker Desktop. No local Python/Node needed.
 
 ### Models & API Keys
 
-| Purpose    | Model                        | Provider |
-|------------|------------------------------|----------|
-| LLM        | `gpt-4o-mini`                | OpenAI   |
-| Embeddings | `text-embedding-3-small` (1536-dim) | OpenAI |
+
+| Purpose    | Model                               | Provider |
+| ---------- | ----------------------------------- | -------- |
+| LLM        | `gpt-4o-mini`                       | OpenAI   |
+| Embeddings | `text-embedding-3-small` (1536-dim) | OpenAI   |
+
 
 All configuration lives in `.env` at the repo root:
 
@@ -46,20 +52,20 @@ OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 JWT_SECRET=change-me-to-a-long-random-string
 ```
 
-Get an API key at https://platform.openai.com/api-keys (a few US dollars is enough to exercise the whole take-home).
+Get an API key at [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys) (a few US dollars is enough to exercise the whole take-home).
 
 ### How to Use (with the Tencent 2025 Annual Report)
 
-1. Open http://localhost:8080 and **register** a new account (minimum 6-character password).
+1. Open [http://localhost:8080](http://localhost:8080) and **register** a new account (minimum 6-character password).
 2. On the left sidebar, click the upload input and select `腾讯2025年度报告.pdf` (included in the repo root).
 3. Wait ~30–60 seconds until the status changes from `processing` to `ready` (ChromaDB embedding + indexing).
 4. Check the checkbox next to the document to scope your questions to it.
 5. Ask in the chat input. Suggested prompts:
-   - 腾讯2025年的总收入是多少？
-   - What was Tencent's total revenue in 2025?
-   - 哪个业务板块同比增速最快？
-   - Summarize the main business segments.
-   - Briefly describe the company's AI strategy.
+  - 腾讯2025年的总收入是多少？
+  - What was Tencent's total revenue in 2025?
+  - 哪个业务板块同比增速最快？
+  - Summarize the main business segments.
+  - Briefly describe the company's AI strategy.
 6. Every answer includes an expandable **citations** block listing the source pages and text snippets used.
 
 Each conversation is persisted — refresh the page and pick up where you left off. Click **+ New Conversation** to start a fresh thread.
@@ -123,30 +129,36 @@ pytest -v
 
 ### 截图
 
-| 登录页 | 上传与提问 | 对话历史 |
-|--------|-----------|---------|
-| ![Login](Login.png) | ![Upload and Ask](screenshot1.png) | ![History](screenshot2.png) |
+
+| 登录页   | 上传与提问          | 对话历史    |
+| ----- | -------------- | ------- |
+| Login | Upload and Ask | History |
+
 
 ### 快速开始
 
-一条命令：
+启动前先完成这 3 步：
+
+1. 参考 `.env.example` 准备一个 OpenAI API key。
+2. 在项目根目录创建 `.env` 文件，并把 OpenAI api key 填进去。
+3. 执行：
 
 ```bash
-cp .env.example .env
-# 编辑 .env，填入真实的 OPENAI_API_KEY
 docker compose up --build
 ```
 
-然后浏览器访问 **http://localhost:8080**。
+然后浏览器访问 **[http://localhost:8080](http://localhost:8080)**。
 
 环境要求：Docker Desktop。无需本地装 Python / Node。
 
 ### 使用的模型 / 如何配置 API Key
 
-| 用途      | 模型                         | 提供方 |
-|-----------|------------------------------|--------|
-| 对话生成  | `gpt-4o-mini`                | OpenAI |
-| 向量化    | `text-embedding-3-small`（1536 维） | OpenAI |
+
+| 用途   | 模型                               | 提供方    |
+| ---- | -------------------------------- | ------ |
+| 对话生成 | `gpt-4o-mini`                    | OpenAI |
+| 向量化  | `text-embedding-3-small`（1536 维） | OpenAI |
+
 
 所有配置在项目根目录的 `.env`：
 
@@ -157,20 +169,20 @@ OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 JWT_SECRET=change-me-to-a-long-random-string
 ```
 
-申请 key：https://platform.openai.com/api-keys（充几美元足够跑完整个 takehome）。
+申请 key：[https://platform.openai.com/api-keys（充几美元足够跑完整个](https://platform.openai.com/api-keys（充几美元足够跑完整个) takehome）。
 
 ### 使用流程（以腾讯2025年度报告为例）
 
-1. 打开 http://localhost:8080 → **注册**账号（密码至少 6 位）。
+1. 打开 [http://localhost:8080](http://localhost:8080) → **注册**账号（密码至少 6 位）。
 2. 左侧栏点击上传框，选择仓库根目录的 `腾讯2025年度报告.pdf`。
 3. 等待约 30-60 秒，状态从 `处理中` 变为 `ready`（正在向量化并写入 ChromaDB）。
 4. 勾选该文档，把提问范围限定到它。
 5. 在下方输入框提问。示例：
-   - 腾讯2025年的总收入是多少？
-   - 公司的 CEO 是谁？
-   - 哪个业务板块同比增速最快？
-   - 简要介绍公司的 AI 战略。
-   - 报告中列出的前三大风险因素是什么？
+  - 腾讯2025年的总收入是多少？
+  - 公司的 CEO 是谁？
+  - 哪个业务板块同比增速最快？
+  - 简要介绍公司的 AI 战略。
+  - 报告中列出的前三大风险因素是什么？
 6. 每次回答下方都有一个可展开的 **引用** 区块，列出所依据的页码和原文片段。
 
 对话会自动持久化，刷新浏览器也不丢。点 **+ 新对话** 开启新的会话线程。
