@@ -3,10 +3,13 @@ import {
   listDocuments, upload, deleteDocument, chat,
   type Document, type Citation,
 } from './api';
+import Login from './Login';
+import { clearAuth, getToken, getUsername } from './auth';
 
 type Msg = { role: 'user' | 'assistant'; content: string; citations?: Citation[] };
 
 export default function App() {
+  const [authed, setAuthed] = useState(!!getToken());
   const [docs, setDocs] = useState<Document[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -14,8 +17,12 @@ export default function App() {
   const [loading, setLoading] = useState(false);
 
   const refresh = async () => setDocs(await listDocuments());
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
-  useEffect(() => { refresh(); }, []);
+  useEffect(() => {
+    if (!authed) return;
+    refresh();
+  }, [authed]);
 
   // when there are processing documents, poll every 2 seconds
   useEffect(() => {
@@ -26,8 +33,13 @@ export default function App() {
   }, [docs]);
 
   const handleUpload = async (f: File) => {
-    await upload(f);
-    refresh();
+    setUploadError(null);
+    try {
+      await upload(f);
+      refresh();
+    } catch (e: any) {
+      setUploadError(e.message);
+    }
   };
 
   const handleAsk = async () => {
@@ -51,15 +63,29 @@ export default function App() {
     }
   };
 
+  if (!authed) {
+    return <Login onDone={() => setAuthed(true)} />;
+  }
+
   return (
     <div className="h-screen flex">
       <aside className="w-80 border-r p-4 overflow-y-auto bg-gray-50">
+        <div className="flex items-center justify-between mb-4 pb-2 border-b">
+          <span className="text-sm text-gray-600">你好，{getUsername()}</span>
+          <button
+            onClick={() => { clearAuth(); setAuthed(false); }}
+            className="text-xs text-gray-500 hover:text-red-500"
+          >登出</button>
+        </div>
         <h2 className="font-semibold mb-3">My documents</h2>
         <input
           type="file" accept="application/pdf"
           onChange={e => e.target.files?.[0] && handleUpload(e.target.files[0])}
           className="mb-4 text-sm"
         />
+        {uploadError && (
+          <div className="text-xs text-red-500 mb-2">{uploadError}</div>
+        )}
         {docs.length === 0 && <p className="text-sm text-gray-400">No PDF uploaded yet</p>}
         {docs.map(d => (
           <div key={d.id} className="mb-2 flex items-start gap-2">
@@ -99,9 +125,8 @@ export default function App() {
           )}
           {messages.map((m, i) => (
             <div key={i} className={m.role === 'user' ? 'text-right' : ''}>
-              <div className={`inline-block max-w-3xl px-4 py-2 rounded-lg whitespace-pre-wrap ${
-                m.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100'
-              }`}>
+              <div className={`inline-block max-w-3xl px-4 py-2 rounded-lg whitespace-pre-wrap ${m.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100'
+                }`}>
                 {m.content}
                 {m.citations && m.citations.length > 0 && (
                   <details className="mt-2 text-xs text-gray-600">
