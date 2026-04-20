@@ -13,9 +13,9 @@ A document-grounded Q&A chatbot. Upload PDFs and ask questions in natural langua
 ### Screenshots
 
 
-| Login | Upload & Ask   | Conversation History |
-| ----- | -------------- | -------------------- |
-| Login | Upload and Ask | History              |
+| Login | Upload & Ask | Conversation History |
+|-------|--------------|----------------------|
+| ![Login](Login.png) | ![Upload and Ask](screenshot1.png) | ![History](screenshot2.png) |
 
 
 ### Quick Start
@@ -130,9 +130,9 @@ pytest -v
 ### 截图
 
 
-| 登录页   | 上传与提问          | 对话历史    |
-| ----- | -------------- | ------- |
-| Login | Upload and Ask | History |
+| 登录页 | 上传与提问 | 对话历史 |
+|--------|-----------|---------|
+| ![Login](Login.png) | ![Upload and Ask](screenshot1.png) | ![History](screenshot2.png) |
 
 
 ### 快速开始
