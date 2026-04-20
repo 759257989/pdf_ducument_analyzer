@@ -21,6 +21,11 @@ class Settings(BaseSettings):
     # 检索返回参数
     retrieval_top_k: int = 6
 
+    # JWT 配置
+    jwt_secret: str = "change-me-in-prod-use-a-long-random-string"
+    jwt_algorithm: str = "HS256"
+    jwt_expires_minutes: int = 60 * 24 * 7
+
     @property
     def uploads_dir(self) -> Path:
         return self.data_dir / "uploads"
@@ -37,3 +42,4 @@ class Settings(BaseSettings):
 settings = Settings()
 settings.uploads_dir.mkdir(parents=True, exist_ok=True)
 settings.chroma_dir.mkdir(parents=True, exist_ok=True)
+

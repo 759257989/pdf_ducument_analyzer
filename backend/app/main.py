@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import documents, chat
 from app.db import init_db
+from app.api import auth as auth_api
 
 app = FastAPI(title="PDF QA Bot")
 
@@ -20,6 +21,7 @@ def on_startup():
 
 app.include_router(documents.router, prefix="/api")
 app.include_router(chat.router, prefix="/api")
+app.include_router(auth_api.router, prefix="/api")
 
 
 @app.get("/health")

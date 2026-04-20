@@ -6,23 +6,32 @@ from app.db import Document, get_db
 from app.schemas import ChatRequest, ChatResponse, Citation
 from app.services.llm import answer
 from app.services.retriever import retrieve
+from app.auth import current_user
+from app.db import User
 
 router = APIRouter()
 
 # chat with the documents
 @router.post("/chat", response_model=ChatResponse)
-def chat(req: ChatRequest, db: Session = Depends(get_db)):
+def chat(
+    req: ChatRequest,
+    db: Session = Depends(get_db),
+    user: User = Depends(current_user),
+):
     if not req.question.strip():
         raise HTTPException(400, "question cannot be empty")
     if not req.doc_ids:
         raise HTTPException(400, "please select at least one document")
 
-    docs = db.query(Document).filter(Document.id.in_(req.doc_ids)).all()
-    if not docs:
-        raise HTTPException(404, "cannot find these documents")
+    docs = db.query(Document).filter(
+        Document.id.in_(req.doc_ids),
+        Document.user_id == user.id,
+    ).all()
+    if len(docs) != len(req.doc_ids):
+        raise HTTPException(403, "some documents do not exist or you do not have access")
     name_map = {d.id: d.filename for d in docs}
 
-    hits = retrieve(req.question, req.doc_ids, top_k=settings.retrieval_top_k)
+    hits = retrieve(req.question, user.id, req.doc_ids, top_k=settings.retrieval_top_k)
     if not hits:
         return ChatResponse(
             answer="Sorry, I could not find relevant information in the uploaded document.",

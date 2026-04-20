@@ -10,7 +10,7 @@ _collection = _client.get_or_create_collection(
 )
 
 
-def add_chunks(chunks: list[Chunk], embeddings: list[list[float]]) -> None:
+def add_chunks(chunks: list[Chunk], embeddings: list[list[float]], user_id: str) -> None:
     if not chunks:
         return
     _collection.add(
@@ -20,6 +20,7 @@ def add_chunks(chunks: list[Chunk], embeddings: list[list[float]]) -> None:
         metadatas=[
             {
                 "doc_id": c.doc_id,
+                "user_id": user_id,
                 "page_number": c.page_number,
                 "chunk_index": c.chunk_index,
             }
@@ -30,10 +31,16 @@ def add_chunks(chunks: list[Chunk], embeddings: list[list[float]]) -> None:
 
 def query(
     query_embedding: list[float],
+    user_id: str,
     doc_ids: list[str],
     top_k: int = 6,
 ) -> list[dict]:
-    where = {"doc_id": {"$in": doc_ids}} if doc_ids else None
+    where = {
+        "$and": [
+            {"user_id": user_id},
+            {"doc_id": {"$in": doc_ids}},
+        ]
+    }
     res = _collection.query(
         query_embeddings=[query_embedding],
         n_results=top_k,
