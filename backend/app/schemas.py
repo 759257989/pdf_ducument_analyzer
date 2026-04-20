@@ -31,3 +31,39 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     answer: str
     citations: list[Citation]
+
+
+class MessageOut(BaseModel):
+    id: str
+    role: str
+    content: str
+    citations: list[Citation] = []
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class ConversationOut(BaseModel):
+    id: str
+    title: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class ConversationDetail(ConversationOut):
+    messages: list[MessageOut]
+
+
+class ChatRequest(BaseModel):
+    question: str
+    doc_ids: list[str]
+    conversation_id: str | None = None   # None = new conversation
+
+
+class ChatResponse(BaseModel):
+    answer: str
+    citations: list[Citation]
+    conversation_id: str                  # tell frontend the id when new conversation

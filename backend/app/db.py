@@ -23,7 +23,7 @@ class User(Base):
 class Document(Base):
     __tablename__ = "documents"
     id: Mapped[str] = mapped_column(String, primary_key=True)
-    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id"), index=True, nullable=False)  # 新增
+    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id"), index=True, nullable=False) 
     filename: Mapped[str] = mapped_column(String, nullable=False)
     content_hash: Mapped[str] = mapped_column(String(64), index=True, nullable=True)
     page_count: Mapped[int] = mapped_column(Integer, default=0)
@@ -32,6 +32,22 @@ class Document(Base):
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
+class Conversation(Base):
+    __tablename__ = "conversations"
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id"), index=True, nullable=False)
+    title: Mapped[str] = mapped_column(String, default="new conversation")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class Message(Base):
+    __tablename__ = "messages"
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    conversation_id: Mapped[str] = mapped_column(String, ForeignKey("conversations.id"), index=True, nullable=False)
+    role: Mapped[str] = mapped_column(String, nullable=False)            # user | assistant
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+    citations_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 def init_db():
     Base.metadata.create_all(bind=engine)
