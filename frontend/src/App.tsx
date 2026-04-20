@@ -98,27 +98,33 @@ export default function App() {
   }
 
   return (
-    <div className="h-screen flex">
-      <aside className="w-80 border-r overflow-y-auto bg-gray-50 flex flex-col">
-        <div className="p-4 flex items-center justify-between border-b">
-          <span className="text-sm text-gray-600">Hi，{getUsername()}</span>
+    <div className="h-screen flex bg-zinc-100 text-zinc-900">
+      <aside className="w-80 border-r border-zinc-800/70 bg-zinc-900 text-zinc-100 flex flex-col">
+        <div className="p-4 flex items-center justify-between border-b border-zinc-800/80">
+          <div className="min-w-0">
+            <p className="text-[11px] uppercase tracking-wider text-zinc-400">Workspace</p>
+            <p className="text-sm font-medium truncate">{getUsername()}</p>
+          </div>
           <button
             onClick={() => { clearAuth(); setAuthed(false); }}
-            className="text-xs text-gray-500 hover:text-red-500"
-          >Logout</button>
+            className="text-xs text-zinc-400 hover:text-red-400 transition-colors"
+          >Log out</button>
         </div>
-        <div className="p-4 border-b">
-          <h2 className="font-semibold mb-2">My Documents</h2>
+        <div className="p-4 border-b border-zinc-800/80">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-3">Documents</h2>
           <input
             type="file"
             accept="application/pdf"
             onChange={e => e.target.files?.[0] && handleUpload(e.target.files[0])}
-            className="mb-2 text-sm"
+            className="mb-3 block w-full text-xs text-zinc-300
+            file:mr-2 file:rounded-md file:border-0
+            file:bg-zinc-700 file:px-2 file:py-1.5 file:text-xs file:font-medium file:text-zinc-100
+            hover:file:bg-zinc-600"
           />
-          {uploadError && <div className="text-xs text-red-500 mb-2">{uploadError}</div>}
-          {docs.length === 0 && <p className="text-sm text-gray-400">No PDF uploaded yet</p>}
+          {uploadError && <div className="text-xs text-red-300 mb-3">{uploadError}</div>}
+          {docs.length === 0 && <p className="text-xs text-zinc-500">No PDF uploaded yet</p>}
           {docs.map(d => (
-            <div key={d.id} className="mb-2 flex items-start gap-2">
+            <div key={d.id} className="mb-2 rounded-lg border border-zinc-800 bg-zinc-800/40 p-2.5 flex items-start gap-2">
               <input
                 type="checkbox"
                 disabled={d.status !== 'ready'}
@@ -128,73 +134,84 @@ export default function App() {
                   e.target.checked ? s.add(d.id) : s.delete(d.id);
                   setSelected(s);
                 }}
-                className="mt-1"
+                className="mt-1 accent-[#4052D6]"
               />
               <div className="flex-1 text-sm min-w-0">
-                <div className="truncate" title={d.filename}>{d.filename}</div>
-                <div className="text-xs text-gray-500">
+                <div className="truncate text-sm text-zinc-100" title={d.filename}>{d.filename}</div>
+                <div className="text-xs text-zinc-400 mt-0.5">
                   {d.status === 'ready' && `${d.page_count} pages · ${d.chunk_count} chunks`}
                   {d.status === 'processing' && 'processing...'}
-                  {d.status === 'failed' && <span className="text-red-500">failed: {d.error}</span>}
+                  {d.status === 'failed' && <span className="text-red-300">failed: {d.error}</span>}
                 </div>
               </div>
               <button
                 onClick={async () => { await deleteDocument(d.id); refresh(); }}
-                className="text-xs text-red-500 hover:underline"
+                className="text-xs text-zinc-400 hover:text-red-400 transition-colors"
               >delete</button>
             </div>
           ))}
         </div>
         <div className="p-4 flex-1">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="font-semibold">Conversation History</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Conversations</h2>
             <button
               onClick={newConversation}
-              className="text-xs bg-blue-500 text-white px-2 py-1 rounded"
+              className="text-xs bg-zinc-700 hover:bg-zinc-600 text-zinc-100 px-2.5 py-1.5 rounded-md transition-colors"
             >
-              + New Conversation
+              + New
             </button>
           </div>
           {conversations.length === 0 && (
-            <p className="text-xs text-gray-400">No conversations yet</p>
+            <p className="text-xs text-zinc-500">No conversations yet</p>
           )}
           {conversations.map(c => (
             <div
               key={c.id}
-              className={`group px-2 py-2 rounded cursor-pointer flex items-center ${
-                c.id === currentConvId ? 'bg-blue-100' : 'hover:bg-gray-100'
+              className={`group px-2.5 py-2 rounded-md cursor-pointer flex items-center border text-sm ${
+                c.id === currentConvId
+                  ? 'bg-zinc-800 border-zinc-700 text-zinc-100'
+                  : 'border-transparent hover:bg-zinc-800/70 text-zinc-300'
               }`}
               onClick={() => openConversation(c.id)}
             >
               <span className="flex-1 text-sm truncate">{c.title}</span>
               <button
                 onClick={e => { e.stopPropagation(); removeConversation(c.id); }}
-                className="opacity-0 group-hover:opacity-100 text-xs text-red-500 ml-2"
+                className="opacity-0 group-hover:opacity-100 text-xs text-zinc-400 hover:text-red-400 ml-2 transition"
               >Delete</button>
             </div>
           ))}
         </div>
       </aside>
 
-      <main className="flex-1 flex flex-col">
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+      <main className="flex-1 flex flex-col bg-zinc-50">
+        <div className="border-b border-zinc-200/80 px-6 py-3 bg-white/70 backdrop-blur-sm">
+          <p className="text-sm text-zinc-600">
+            {selected.size > 0 ? `${selected.size} document(s) selected` : 'Select documents to start chatting'}
+          </p>
+        </div>
+        <div className="flex-1 overflow-y-auto px-4 md:px-8 py-6">
+          <div className="mx-auto w-full max-w-3xl space-y-6">
           {messages.length === 0 && (
-            <div className="text-gray-400 text-center mt-20">
-              Upload PDF, select documents, then ask questions below
+            <div className="text-zinc-400 text-center mt-20">
+              Ask a question about your selected documents
             </div>
           )}
           {messages.map((m, i) => (
-            <div key={i} className={m.role === 'user' ? 'text-right' : ''}>
-              <div className={`inline-block max-w-3xl px-4 py-2 rounded-lg whitespace-pre-wrap ${m.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100'
+            <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div className={`max-w-[85%] px-4 py-3 rounded-2xl whitespace-pre-wrap shadow-sm ${
+                m.role === 'user'
+                  ? 'bg-[#4052D6] text-white rounded-br-md'
+                  : 'bg-white text-zinc-800 border border-zinc-200 rounded-bl-md'
                 }`}>
                 {m.content}
                 {m.citations && m.citations.length > 0 && (
-                  <details className="mt-2 text-xs text-gray-600">
+                  <details className={`mt-3 text-xs ${m.role === 'user' ? 'text-[#E2E5FF]' : 'text-zinc-500'}`}>
                     <summary className="cursor-pointer">citations ({m.citations.length})</summary>
                     {m.citations.map((c, j) => (
-                      <div key={j} className="mt-1 border-l-2 pl-2">
+                      <div key={j} className={`mt-1.5 border-l-2 pl-2 ${m.role === 'user' ? 'border-[#B3BBFF]' : 'border-zinc-300'}`}>
                         <b>{c.filename} · page {c.page_number}</b>
-                        <div className="text-gray-500">{c.snippet}...</div>
+                        <div className={m.role === 'user' ? 'text-[#E2E5FF]' : 'text-zinc-500'}>{c.snippet}...</div>
                       </div>
                     ))}
                   </details>
@@ -202,23 +219,28 @@ export default function App() {
               </div>
             </div>
           ))}
-          {loading && <div className="text-gray-400">thinking...</div>}
+          {loading && <div className="text-zinc-400 text-sm">Thinking...</div>}
+          </div>
         </div>
 
-        <div className="border-t p-4 flex gap-2">
-          <input
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleAsk()}
-            placeholder={selected.size === 0 ? 'please select documents' : 'input question...'}
-            disabled={selected.size === 0 || loading}
-            className="flex-1 border rounded px-3 py-2"
-          />
-          <button
-            onClick={handleAsk}
-            disabled={selected.size === 0 || loading || !input.trim()}
-            className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
-          >send</button>
+        <div className="border-t border-zinc-200 bg-white px-4 py-4">
+          <div className="mx-auto max-w-3xl flex gap-2 items-end">
+            <input
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleAsk()}
+              placeholder={selected.size === 0 ? 'Please select documents first' : 'Message your documents...'}
+              disabled={selected.size === 0 || loading}
+              className="flex-1 rounded-2xl border border-zinc-300 bg-zinc-50 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#4052D6]/30 focus:border-[#4052D6]"
+            />
+            <button
+              onClick={handleAsk}
+              disabled={selected.size === 0 || loading || !input.trim()}
+              className="h-11 px-4 rounded-xl bg-[#4052D6] text-white text-sm font-medium hover:bg-[#3446C6] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              Send
+            </button>
+          </div>
         </div>
       </main>
     </div>
