@@ -31,7 +31,7 @@ export type Document = {
     if (r.status === 401) {
       clearAuth();
       window.location.reload();
-      throw new Error('登录已过期');
+      throw new Error('Login expired');
     }
     return r;
   }
@@ -43,7 +43,7 @@ export type Document = {
     if (r.status === 409) {
         const body = await r.json();
         throw new Error(
-        `该 PDF 已上传过：${body.detail.existing_filename}`,
+        `This PDF has already been uploaded: ${body.detail.existing_filename}`,
         );
     }
     if (!r.ok) throw new Error(await r.text());
@@ -61,15 +61,45 @@ export type Document = {
     if (!r.ok) throw new Error(await r.text());
   }
   
+  export type Conversation = {
+    id: string;
+    title: string;
+    created_at: string;
+  };
+  
+  export type MessageFromServer = {
+    id: string;
+    role: 'user' | 'assistant';
+    content: string;
+    citations: Citation[];
+    created_at: string;
+  };
+  
+  export type ConversationDetail = Conversation & { messages: MessageFromServer[] };
+  
+  export async function listConversations(): Promise<Conversation[]> {
+    const r = await authFetch('/api/conversations');
+    return r.json();
+  }
+  
+  export async function getConversation(id: string): Promise<ConversationDetail> {
+    const r = await authFetch(`/api/conversations/${id}`);
+    return r.json();
+  }
+  
+  export async function deleteConversation(id: string): Promise<void> {
+    await authFetch(`/api/conversations/${id}`, { method: 'DELETE' });
+  }
+
   export async function chat(
     question: string,
     doc_ids: string[],
-    history: { role: string; content: string }[],
-  ): Promise<ChatResponse> {
+    conversation_id: string | null,
+  ): Promise<ChatResponse & { conversation_id: string }> {
     const r = await authFetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question, doc_ids, history }),
+      body: JSON.stringify({ question, doc_ids, conversation_id }),
     });
     if (!r.ok) throw new Error(await r.text());
     return r.json();
@@ -81,7 +111,7 @@ export type Document = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
     });
-    if (!r.ok) throw new Error((await r.json()).detail || '登录失败');
+    if (!r.ok) throw new Error((await r.json()).detail || 'Login failed');
     return r.json() as Promise<{ token: string; username: string }>;
   }
 
@@ -91,6 +121,6 @@ export type Document = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
     });
-    if (!r.ok) throw new Error((await r.json()).detail || '注册失败');
+    if (!r.ok) throw new Error((await r.json()).detail || 'Registration failed');
     return r.json() as Promise<{ token: string; username: string }>;
   }
